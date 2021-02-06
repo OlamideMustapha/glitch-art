@@ -6,16 +6,18 @@ module Lib
 
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.ByteString as B
-import System.Random
-import Data.List
+import System.Random ( Random(randomRIO) )
+import Data.List ()
 
-
+{- Converts an Int into a Char (ASCII) -}
 intToChar :: Int -> Char
 intToChar int = toEnum safeInt
   where safeInt = int `mod` 255
 
+{- Converts Char (ASCII) into Byte -}
 intToBC :: Int -> BC.ByteString
 intToBC int = BC.pack [intToChar int]
+
 
 
 replaceByte :: Int -> Int -> BC.ByteString -> BC.ByteString
@@ -24,11 +26,12 @@ replaceByte target int byte = mconcat [before, intChar,rest]
     (before, rest) = BC.splitAt target byte
     intChar        = intToBC int
 
+
 randomReplaceByte :: BC.ByteString -> IO BC.ByteString
 randomReplaceByte bytes = do
   let bytesLength = BC.length bytes
-  location <- randomRIO (1, bytesLength)
-  charVal  <- randomRIO (0, 255)
+  location <- randomRIO (1, bytesLength) -- gen random index of byte to replace
+  charVal  <- randomRIO (0, 255)         -- gen random int to replace the byte with
   return (replaceByte location charVal bytes)
 
 
